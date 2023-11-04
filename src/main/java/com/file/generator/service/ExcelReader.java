@@ -7,13 +7,17 @@ import org.springframework.stereotype.Service;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.*;
 
 @Service
 public class ExcelReader {
 
-    @Scheduled(cron = "0 0 15 * * ?") // Executes every day at 3:00 PM
+    private static String outputFile = "output.xlsx";
+
+    //@Scheduled(cron = "0 0 15 * * ?") // Executes every day at 3:00 PM
+    @Scheduled(fixedRate = 120000) // Executes every 2 minutes (120,000 milliseconds)
     public void executeTask() {
         // Your task logic goes here
         System.out.println("Scheduled task executed every 2 minutes: " + new Date());
@@ -60,11 +64,17 @@ public class ExcelReader {
                 }
                 System.out.println("-------------------------");
             }
+            try (FileOutputStream fos = new FileOutputStream(outputFile)) {
+                workbook.write(fos);
+                System.out.println("Modified data written to " + outputFile);
+            }
 
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
+
+
 
     // Helper method to format cell values appropriately
     private static String formatCellValue(Cell cell) {
