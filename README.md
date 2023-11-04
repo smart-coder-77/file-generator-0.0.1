@@ -10,14 +10,15 @@ public class Main {
         Calendar calendar = Calendar.getInstance();
         calendar.setTime(givenDate);
 
-        // Find the last Saturday from the given date
-        while (calendar.get(Calendar.DAY_OF_WEEK) != Calendar.SATURDAY) {
-            calendar.add(Calendar.DAY_OF_WEEK, -1);
-        }
+        // Move to the first day of the current month
+        calendar.set(Calendar.DAY_OF_MONTH, 1);
 
-        // Get the last Saturday as a Date object
-        Date lastSaturday = calendar.getTime();
+        // Move back one day to get to the last day of the previous month
+        calendar.add(Calendar.DAY_OF_MONTH, -1);
 
-        System.out.println("Last Saturday from the given date: " + lastSaturday);
+        // Get the last date of the previous month as a Date object
+        Date lastDayOfPreviousMonth = calendar.getTime();
+
+        System.out.println("Last date of the previous month: " + lastDayOfPreviousMonth);
     }
 }
