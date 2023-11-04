@@ -1,44 +1,48 @@
-# file-generator-0.0.1
+import org.apache.poi.ss.usermodel.*;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.util.List;
 
-public class DateComparison {
+public class ExcelWriter {
+
+    public static void writeObjectsToExcel(List<Person> persons, String filePath) throws IOException {
+        try (Workbook workbook = new XSSFWorkbook()) {
+            Sheet sheet = workbook.createSheet("Persons");
+
+            int rowNum = 0;
+            for (Person person : persons) {
+                Row row = sheet.createRow(rowNum++);
+                Cell nameCell = row.createCell(0);
+                nameCell.setCellValue(person.getName());
+
+                Cell ageCell = row.createCell(1);
+                ageCell.setCellValue(person.getAge());
+            }
+
+            // Write the workbook content to the file
+            try (FileOutputStream fileOut = new FileOutputStream(filePath)) {
+                workbook.write(fileOut);
+            }
+        }
+    }
 
     public static void main(String[] args) {
-        String x = "Tue Feb 07 15:40:12 IST 2022";
-        String y = "2023-02-05";
+        // Sample data
+        List<Person> persons = List.of(
+                new Person("Alice", 30),
+                new Person("Bob", 25),
+                new Person("Charlie", 35)
+        );
 
-        // Parse x to Date object with the given format
-        SimpleDateFormat inputFormat = new SimpleDateFormat("E MMM dd HH:mm:ss z yyyy");
-        Date dateX;
+        String filePath = "output.xlsx";
+
         try {
-            dateX = inputFormat.parse(x);
-        } catch (ParseException e) {
-            System.out.println("Error parsing date: " + e.getMessage());
-            return;
-        }
-
-        // Parse y to Date object with the given format
-        SimpleDateFormat outputFormat = new SimpleDateFormat("yyyy-MM-dd");
-        Date dateY;
-        try {
-            dateY = outputFormat.parse(y);
-        } catch (ParseException e) {
-            System.out.println("Error parsing date: " + e.getMessage());
-            return;
-        }
-
-        // Calculate the difference in days between the two dates
-        long differenceInMilliseconds = dateY.getTime() - dateX.getTime();
-        long differenceInDays = differenceInMilliseconds / (1000 * 60 * 60 * 24);
-
-        // Check if the difference in days is less than 4
-        if (differenceInDays < 4) {
-            System.out.println("The difference in days between the dates is less than 4.");
-        } else {
-            System.out.println("The difference in days between the dates is 4 or more.");
+            writeObjectsToExcel(persons, filePath);
+            System.out.println("Data written to Excel successfully.");
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
 }
